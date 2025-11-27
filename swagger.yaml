@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  description: Simple RESTful API for managing users with CRUD operations
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /Main.php:
+    get:
+      summary: List users
+      description: Retrieve all registered users (non-deleted by default)
+      operationId: listUsers
+      tags:
+        - Users
+      parameters:
+        - name: action
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [list]
+            default: list
+          description: Action to perform (defaults to list)
+        - name: includeDeleted
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Include soft-deleted users in the response
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Manage users
+      description: Create, update, or delete users
+      operationId: manageUsers
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CreateUserRequest'
+                - $ref: '#/components/schemas/UpdateUserRequest'
+                - $ref: '#/components/schemas/DeleteUserRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request (validation error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflict (email already registered)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+          example: "6927aec4e60f7"
+        name:
+          type: string
+          description: User's full name
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "john@example.com"
+        deleted:
+          type: boolean
+          description: Soft delete flag
+          example: false
+      required:
+        - id
+        - name
+        - email
+        - deleted
+
+    CreateUserRequest:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [create]
+          example: create
+        name:
+          type: string
+          description: User's full name
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "john@example.com"
+      required:
+        - action
+        - name
+        - email
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [update]
+          example: update
+        id:
+          type: string
+          description: User ID to update
+          example: "6927aec4e60f7"
+        name:
+          type: string
+          description: New name (optional)
+          example: "Jane Doe"
+        email:
+          type: string
+          format: email
+          description: New email (optional)
+          example: "jane@example.com"
+      required:
+        - action
+        - id
+
+    DeleteUserRequest:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [delete]
+          example: delete
+        id:
+          type: string
+          description: User ID to delete
+          example: "6927aec4e60f7"
+      required:
+        - action
+        - id
+
+    Error:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error message
+          example: "Required parameters: name, email"
+      required:
+        - ok
+        - error

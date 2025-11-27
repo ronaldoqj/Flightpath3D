@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Jo\u00e3o S. da Silva",
+        "email": "joao@email.com",
+        "id": "6927a9151287d",
+        "deleted": true
+    },
+    {
+        "name": "John Doe",
+        "email": "johndoe@test.com",
+        "id": "6927aec4e60f7",
+        "deleted": false
+    },
+    {
+        "name": "John Doe update",
+        "email": "johndoe@testupdate.com",
+        "id": "6927aed8e03a2",
+        "deleted": false
+    },
+    {
+        "name": "John Doe 13",
+        "email": "johndoe13@test.com",
+        "id": "6927b0d1ed9b8",
+        "deleted": true
+    },
+    {
+        "name": "test updated",
+        "email": "testupdate@test.com",
+        "id": "6927b5a5336d4",
+        "deleted": false
+    }
+]
